@@ -17,6 +17,8 @@ app.use('/api/v1/students', StudentRoutes)
 //   res.send(a);
 // }
 
-// app.get('/', getAController);
+app.get('/', (req, res) => {
+    res.send('hello i am running')
+});
 
 export default app;
