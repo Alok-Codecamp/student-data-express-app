@@ -1,7 +1,6 @@
-import { model, Schema, VirtualType } from "mongoose";
-import { IGuardian, ILocalGurdian, Istudent, IUserName, StudentModel } from "./students/student.interface";
-import bcrypt from 'bcrypt';
-import config from "../config";
+import { model, Schema } from "mongoose";
+import { IGuardian, ILocalGurdian, Istudent, IUserName, StudentModel } from "./student.interface";
+
 
 
 const userNameSchema = new Schema<IUserName>({
@@ -53,12 +52,13 @@ const localGuardianSchema = new Schema<ILocalGurdian>({
 
 const studentSchema = new Schema<Istudent, StudentModel>({
     id: { type: String, required: true, unique: true },
-    password: {
-        type: String,
-        required: [true, 'password is required'],
-        maxlength: [20, 'password can not be more than 20']
-
+    user: {
+        type: Schema.ObjectId,
+        required: [true, 'id is required'],
+        unique: true,
+        ref: 'UserModel'
     },
+
     name: {
         type: userNameSchema,
         required: [true, 'you must enter first name '],
@@ -88,12 +88,7 @@ const studentSchema = new Schema<Istudent, StudentModel>({
     guardian: guardianSchema,
     localGuardian: localGuardianSchema,
     avatar: { type: String },
-    isActive: {
-        type: String,
-        enum: ['active', 'inActive'],
-        default: 'active'
 
-    },
     isDeleted: {
         type: Boolean,
         default: false
@@ -106,30 +101,6 @@ const studentSchema = new Schema<Istudent, StudentModel>({
 
 studentSchema.virtual('fullName').get(function () {
     return this.name.firstName + this.name.middleName + this.name.lastName;
-})
-
-
-
-// pre save middleware/hook
-
-studentSchema.pre('save', async function (next) {
-    // console.log('this is the this value of pre hook:', this, ' post hook: we will save our data');
-
-    // hashing pass and save in to db 
-    const user = this;
-    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds)
-    )
-    next();
-
-})
-
-
-// post save middleware
-
-studentSchema.post('save', function (doc, next) {
-    // console.log('this is the this value of post hook:', this, ' post hook: we will save our data');
-    doc.password = " "
-    next();
 })
 
 //for find query
@@ -159,10 +130,5 @@ studentSchema.static('isUserExists', async function isUserExists(id: string) {
     return existingUser;
 })
 
-// apply custom instence method 
-// studentSchema.methods.isUserExists = async function (id: string) {
-//     const existingUser = await Student.findOne({ id });
-//     return existingUser;
-// }
 
 export const Student = model<Istudent, StudentModel>('student', studentSchema);

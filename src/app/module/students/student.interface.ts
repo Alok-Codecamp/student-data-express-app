@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 
 export interface IGuardian {
@@ -27,6 +27,7 @@ export interface ILocalGurdian {
 
 export interface Istudent {
     id: string;
+    user: Types.ObjectId;
     password: string;
     name: IUserName;
     gender: 'male' | 'female' | 'other';
@@ -40,7 +41,6 @@ export interface Istudent {
     guardian: IGuardian;
     localGuardian: ILocalGurdian;
     avatar?: string;
-    isActive: 'active' | 'inActive';
     isDeleted?: boolean;
 
 }
