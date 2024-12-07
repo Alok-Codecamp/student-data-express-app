@@ -53,10 +53,44 @@ const createStudentValidationSchema = z.object({
             guardian: guardianValidationSchema,
             localGuardian: localGuardianValidationSchema,
             avatar: z.string().url("Avatar must be a valid URL").optional(),
+            admissionSemester: z.string(),
+            academicDepertment: z.string()
         })
     })
 });
 
+
+// Update Student Schema
+const updateStudentValidationSchema = z.object({
+    body: z.object({
+        password: z.string().max(20, 'Password cannot be more than 20 characters').optional(),
+        student: z
+            .object({
+                name: userNameValidationSchema.partial(),
+                gender: z
+                    .enum(["male", "female", "other"], {
+                        errorMap: () => ({ message: "Gender must be male, female, or other" }),
+                    })
+                    .optional(),
+                dateOfBirth: z.string().optional(), // Optional for update
+                email: z.string().email("Invalid email format").optional(),
+                contactNumber: z.string().optional(),
+                emergencyContactNo: z.string().optional(),
+                bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]).optional(),
+                presentAddress: z.string().optional(),
+                permanentAddress: z.string().optional(),
+                guardian: guardianValidationSchema.partial(),
+                localGuardian: localGuardianValidationSchema.partial().optional(),
+                avatar: z.string().url("Avatar must be a valid URL").optional(),
+                admissionSemester: z.string().optional(),
+                academicDepertment: z.string().optional(),
+            })
+            .optional(),
+    }),
+});
+
+
 export const studentValidations = {
     createStudentValidationSchema,
+    updateStudentValidationSchema
 }

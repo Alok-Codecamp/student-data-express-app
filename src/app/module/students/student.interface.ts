@@ -1,4 +1,4 @@
-import { Model, Types } from "mongoose";
+import { Model, ObjectId, Types } from "mongoose";
 
 
 export interface IGuardian {
@@ -41,6 +41,8 @@ export interface Istudent {
     guardian: IGuardian;
     localGuardian: ILocalGurdian;
     avatar?: string;
+    admissionSemester: ObjectId;
+    academicDepertment: ObjectId;
     isDeleted?: boolean;
 
 }

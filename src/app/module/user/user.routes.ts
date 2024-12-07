@@ -1,8 +1,6 @@
-import expresss, { NextFunction, Request, Response } from 'express';
+import expresss from 'express';
 import { userController } from "./user.controller";
-import { AnyZodObject } from 'zod';
 import { studentValidations } from '../students/student.Zodvalidation';
-import studentValidator from '../../middlewares/validateRequest.ts';
 import requestValidator from '../../middlewares/validateRequest.ts';
 
 

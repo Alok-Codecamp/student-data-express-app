@@ -1,5 +1,8 @@
 import { model, Schema } from "mongoose";
 import { IGuardian, ILocalGurdian, Istudent, IUserName, StudentModel } from "./student.interface";
+import { AcademicDepertmentModel } from "../academicDepertment/academicDepertment.model";
+import { academicSemesterModel } from "../academicSemister/acamedicSemester.model";
+import AppError from "../../middlewares/errorSuperClass";
 
 
 
@@ -56,7 +59,7 @@ const studentSchema = new Schema<Istudent, StudentModel>({
         type: Schema.ObjectId,
         required: [true, 'id is required'],
         unique: true,
-        ref: 'UserModel'
+        ref: 'userModel'
     },
 
     name: {
@@ -88,6 +91,16 @@ const studentSchema = new Schema<Istudent, StudentModel>({
     guardian: guardianSchema,
     localGuardian: localGuardianSchema,
     avatar: { type: String },
+    admissionSemester: {
+        type: Schema.ObjectId,
+        ref: academicSemesterModel
+    },
+
+    academicDepertment: {
+        type: Schema.ObjectId,
+        ref: AcademicDepertmentModel
+    },
+
 
     isDeleted: {
         type: Boolean,
@@ -123,12 +136,19 @@ studentSchema.pre('aggregate', function (next) {
     next();
 })
 
+// studentSchema.pre('save', async function (next) {
+//     const isUserExists = await Student.findById(this.id);
+//     if (isUserExists) {
+//         throw new AppError(httpStatus.BAD_REQUEST, 'This Student already exists')
+//     }
+//     next();
+// })
 // creating a custom static method 
 
-studentSchema.static('isUserExists', async function isUserExists(id: string) {
-    const existingUser = await Student.findOne({ id });
-    return existingUser;
-})
+// studentSchema.static('isUserExists', async function isUserExists(id: string) {
+//     const existingUser = await Student.findOne({ id });
+//     return existingUser;
+// })
 
 
-export const Student = model<Istudent, StudentModel>('student', studentSchema);
+export const Student = model<Istudent>('student', studentSchema);

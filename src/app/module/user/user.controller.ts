@@ -14,8 +14,9 @@ const createStudent = catchAsync(async (req, res, next) => {
     const { password, student } = req.body;
 
     // const ZodParseData = studentZodSchema.parse(studentData)
-
     const result = await userServices.createStudentIntoDB(password, student);
+    // console.log(result);
+
     sendResponse(res, {
         statuscode: httpStatus.OK,
         success: true,

@@ -34,4 +34,17 @@ const academicSemesterSchema = new Schema<IAcademicSemester>({
 })
 
 
-export const acamedicSemesterModel = model<IAcademicSemester>("academicSemester", academicSemesterSchema)
+
+
+academicSemesterSchema.pre('save', async function (next) {
+    const isSemesterExist = await academicSemesterModel.findOne({
+        name: this.name,
+        year: this.year,
+    })
+    if (isSemesterExist) {
+        throw new Error('Semester is already exists !')
+    }
+    next();
+})
+
+export const academicSemesterModel = model<IAcademicSemester>("academicSemester", academicSemesterSchema)
