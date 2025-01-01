@@ -31,7 +31,7 @@ const localGuardianValidationSchema = z.object({
 // Student Schema
 const createStudentValidationSchema = z.object({
     body: z.object({
-        password: z.string().max(20, 'password can not more than 20'),
+        password: z.string().max(20, 'password can not more than 20').optional(),
         student: z.object({
             name: userNameValidationSchema,
             gender: z
@@ -52,7 +52,7 @@ const createStudentValidationSchema = z.object({
             permanentAddress: z.string().min(1, "Permanent address is required"),
             guardian: guardianValidationSchema,
             localGuardian: localGuardianValidationSchema,
-            avatar: z.string().url("Avatar must be a valid URL").optional(),
+            profileImg: z.string().optional(),
             admissionSemester: z.string(),
             academicDepertment: z.string()
         })

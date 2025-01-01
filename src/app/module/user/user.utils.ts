@@ -1,5 +1,8 @@
+import mongoose, { Document, Model, Models, Schema } from "mongoose";
 import { IAcademicSemester } from "../academicSemister/academicSemester.interface";
 import { userModel } from "./user.model";
+import { IUser } from "./user.interface";
+import { FacultyModel } from "../faculty/faculty.model";
 
 
 
@@ -14,9 +17,8 @@ const findLastStudentId = async () => {
     }).lean()
 
     return lastStudent?.id ? lastStudent.id : undefined;
+
 }
-
-
 const generateStudentId = async (payLoad: IAcademicSemester) => {
 
 
@@ -41,8 +43,68 @@ const generateStudentId = async (payLoad: IAcademicSemester) => {
     return incrementId
 }
 
+// utils function for faculty 
+const findLastFacultyId = async () => {
+    const lastFaculty = await userModel.findOne({
+        role: 'faculty',
+    }, {
+        id: 1,
+        _id: 0
+    }).sort({
+        createdAt: -1
+    }).lean()
+
+    return lastFaculty?.id ? lastFaculty.id : undefined;
+}
+
+// 
+const generateFacultyId = async () => {
+    let currentId = await (0).toString();
+    const lastFacultyId = await findLastFacultyId();
+    if (lastFacultyId) {
+        currentId = lastFacultyId.substring(5);
+    }
+
+    let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+
+
+    incrementId = `F-${incrementId}`
+    console.log(incrementId);
+
+    return incrementId
+}
+
+// admin id
+const findLastAdminId = async () => {
+    const lastFaculty = await userModel.findOne({
+        role: 'admin',
+    }, {
+        id: 1,
+        _id: 0
+    }).sort({
+        createdAt: -1
+    }).lean()
+
+    return lastFaculty?.id ? lastFaculty.id : undefined;
+}
+const generateAdminId = async () => {
+    let currentId = await (0).toString();
+    const lastFacultyId = await findLastAdminId();
+    if (lastFacultyId) {
+        currentId = lastFacultyId.substring(5);
+    }
+
+    let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+
+
+    incrementId = `A-${incrementId}`
+
+    return incrementId
+}
 const userUtils = {
-    generateStudentId
+    generateStudentId,
+    generateFacultyId,
+    generateAdminId
 }
 
 export default userUtils;

@@ -40,7 +40,7 @@ export interface Istudent {
     permanentAddress: string;
     guardian: IGuardian;
     localGuardian: ILocalGurdian;
-    avatar?: string;
+    profileImg?: string;
     admissionSemester: ObjectId;
     academicDepertment: ObjectId;
     isDeleted?: boolean;
@@ -55,11 +55,5 @@ export interface StudentModel extends Model<Istudent> {
 }
 
 
-
-// for creating instance
-// export type StudentMethod = {
-//     isUserExists(id: string): Promise<Istudent | null>
-// };
-// export type StudentModel = Model<Istudent, Record<string, never>, StudentMethod>;
 
 

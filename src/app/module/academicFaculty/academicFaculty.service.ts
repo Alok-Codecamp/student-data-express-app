@@ -1,12 +1,18 @@
-import { ObjectId } from "mongoose";
+import httpStatus from "http-status";
 import { IAcademicFaculty } from "./academicFacultty.interface";
 import { AcademicFacultyModel } from "./academicFaculty.model";
+import AppError from "../../middlewares/errorSuperClass";
 
 
 // service for create Faculty Data in in Db
-const createAcademicFacultyIntoDB = async (FacultyData: IAcademicFaculty) => {
+const createAcademicFacultyIntoDB = async (academicFacultyData: IAcademicFaculty) => {
+    const isAcademicFacultyExists = await AcademicFacultyModel.findOne({ name: academicFacultyData.name }).select('_id');
 
-    const createdFacultyData = await AcademicFacultyModel.create(FacultyData);
+    if (isAcademicFacultyExists) {
+        throw new AppError(httpStatus.CONFLICT, 'Academic faculty already exists!!')
+    }
+
+    const createdFacultyData = await AcademicFacultyModel.create(academicFacultyData);
 
     return createdFacultyData;
 }

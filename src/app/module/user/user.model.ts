@@ -1,13 +1,19 @@
 import { model, Schema } from "mongoose";
-import { IUser } from "./user.interface";
+import { IUser, UserModel } from "./user.interface";
 import bcrypt from 'bcrypt'
 import config from "../../config";
+import { userStatus } from "./user.constant";
 
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser, UserModel>({
     id: {
         type: String,
         required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -19,13 +25,18 @@ const userSchema = new Schema<IUser>({
         default: true
 
     },
+    passwordChangeAt: {
+        type: Date,
+        default: new Date
+
+    },
     role: {
         type: String,
-        enum: ['student', 'faculty', 'admin']
+        enum: ['superAdmin', 'student', 'faculty', 'admin']
     },
     status: {
         type: String,
-        enum: ['in-progress', 'blocked'],
+        enum: userStatus,
         default: 'in-progress'
     },
     isDeleted: {
@@ -38,7 +49,7 @@ const userSchema = new Schema<IUser>({
 })
 
 userSchema.pre('save', async function (next) {
-    // console.log('this is the this value of pre hook:', this, ' post hook: we will save our data');
+
 
     // hashing pass and save in to db 
     const student = this;
@@ -50,9 +61,26 @@ userSchema.pre('save', async function (next) {
 
 
 userSchema.post('save', function (doc, next) {
-    // console.log('this is the this value of post hook:', this, ' post hook: we will save our data');
+
     doc.password = " "
     next();
 })
 
-export const userModel = model<IUser>('user', userSchema)
+
+userSchema.statics.isUserExistsByCustomId = async function (id: string) {
+    return await userModel.findOne({ id: id });
+}
+
+userSchema.statics.isPasswordMatched = async function (plainPassword, hashedPassword) {
+    return await bcrypt.compare(plainPassword, hashedPassword);
+}
+
+userSchema.statics.isJWTIssuedBeforePasswordChange = async function (passwordChangeTimeStamp, jwtIssuedTimeStamp) {
+
+    const passwordChangeTime = new Date(passwordChangeTimeStamp).getTime() / 1000;
+
+    return passwordChangeTime > jwtIssuedTimeStamp;
+}
+
+
+export const userModel = model<IUser, UserModel>('user', userSchema)

@@ -2,7 +2,6 @@ import { model, Schema } from "mongoose";
 import { IGuardian, ILocalGurdian, Istudent, IUserName, StudentModel } from "./student.interface";
 import { AcademicDepertmentModel } from "../academicDepertment/academicDepertment.model";
 import { academicSemesterModel } from "../academicSemister/acamedicSemester.model";
-import AppError from "../../middlewares/errorSuperClass";
 
 
 
@@ -77,7 +76,7 @@ const studentSchema = new Schema<Istudent, StudentModel>({
     },//this is enum  type
     dateOfBirth: { type: String, required: [true, 'you must enter date of birth '] },
     email: {
-        type: String, required: [true, 'you must enter the email '], unique: true,
+        type: String, required: [true, 'you must enter the email '], unique: true
     },
 
     contactNumber: { type: String, required: [true, 'you must enter the contact number '] },
@@ -90,7 +89,7 @@ const studentSchema = new Schema<Istudent, StudentModel>({
     permanentAddress: { type: String, required: true },
     guardian: guardianSchema,
     localGuardian: localGuardianSchema,
-    avatar: { type: String },
+    profileImg: { type: String },
     admissionSemester: {
         type: Schema.ObjectId,
         ref: academicSemesterModel
@@ -113,7 +112,7 @@ const studentSchema = new Schema<Istudent, StudentModel>({
 // mongoos vertual 
 
 studentSchema.virtual('fullName').get(function () {
-    return this.name.firstName + this.name.middleName + this.name.lastName;
+    return this?.name?.firstName + this?.name?.middleName + this?.name?.lastName;
 })
 
 //for find query
@@ -136,19 +135,6 @@ studentSchema.pre('aggregate', function (next) {
     next();
 })
 
-// studentSchema.pre('save', async function (next) {
-//     const isUserExists = await Student.findById(this.id);
-//     if (isUserExists) {
-//         throw new AppError(httpStatus.BAD_REQUEST, 'This Student already exists')
-//     }
-//     next();
-// })
-// creating a custom static method 
-
-// studentSchema.static('isUserExists', async function isUserExists(id: string) {
-//     const existingUser = await Student.findOne({ id });
-//     return existingUser;
-// })
 
 
 export const Student = model<Istudent>('student', studentSchema);

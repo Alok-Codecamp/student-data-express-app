@@ -20,23 +20,6 @@ const AcademicDepertmentSchema = new Schema<IAcademicDepertment>({
 
 
 
-
-
-
-AcademicDepertmentSchema.pre('save', async function (next) {
-
-    const isDepertmentExists = await AcademicDepertmentModel.findOne({
-        name: this.name
-    })
-
-    if (isDepertmentExists) {
-        throw new AppError(404, 'This Depertment is already exists')
-    }
-
-    next();
-
-})
-
 AcademicDepertmentSchema.pre('findOneAndUpdate', async function (next) {
 
     const query = this.getQuery()

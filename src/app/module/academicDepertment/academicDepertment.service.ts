@@ -1,10 +1,24 @@
+import AppError from "../../middlewares/errorSuperClass";
+import { AcademicFacultyModel } from "../academicFaculty/academicFaculty.model";
 import { IAcademicDepertment } from "./academicDepertment.interface";
 import { AcademicDepertmentModel } from "./academicDepertment.model";
-
+import httpStatus from "http-status";
 
 
 // service for create Academic depertment 
 const createAcademicDepertmentIntoDb = async (payLoad: IAcademicDepertment) => {
+
+    const isDepertmentExists = await AcademicDepertmentModel.findOne({ name: payLoad.name }).select('_id');
+
+    if (isDepertmentExists) {
+        throw new AppError(httpStatus.CONFLICT, 'Depertment already exist!');
+    }
+
+    const isAcademicFacultyExists = await AcademicFacultyModel.findById(payLoad.academicFaculty).select('_id');
+
+    if (!isAcademicFacultyExists) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Academic faculty not found!!')
+    }
 
     const result = await AcademicDepertmentModel.create(payLoad)
 

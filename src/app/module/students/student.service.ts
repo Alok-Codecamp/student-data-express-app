@@ -3,19 +3,27 @@ import { Student } from "./student.model";
 import AppError from "../../middlewares/errorSuperClass";
 import { userModel } from "../user/user.model";
 import { Istudent } from "./student.interface";
-import { object } from "joi";
+
+import { studentSearchableFields } from "./student.constant";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 
 
-const getAllStudentsFromDB = async () => {
-    const result = await Student.find().populate('admissionSemester').populate({
+const getAllStudentsFromDB = async (queryParam: Record<string, unknown>) => {
+
+    const studentQuery = new QueryBuilder(Student.find().populate('admissionSemester').populate({
         path: 'academicDepertment',
         populate: {
             path: 'academicFaculty'
         }
-    });
+    }), queryParam).search(studentSearchableFields).filter().sort().paginate().fields()
+
+    const result = await studentQuery.modelQuery;
+
     return result;
 }
+
+// get student by id
 const getSingleStudentsFromDB = async (id: string) => {
     const result = await Student.findOne({ id }).populate('admissionSemester').populate({
         path: 'academicDepertment',
